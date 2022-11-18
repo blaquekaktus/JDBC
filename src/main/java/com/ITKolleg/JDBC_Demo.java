@@ -7,13 +7,46 @@ public class JDBC_Demo {
 
     public static void main(String[] args) {
         System.out.println("JDBC Demo!\n");
-        //INSERT INTO `student` (`id`, `name`, `email`) VALUES (NULL, 'Jason Lechner', 'jaslechner@tsn.at'), (NULL, 'Josan Lechner', 'joslechner@tsn.at');
-        //CREATE TABLE `studenten`.`student` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(200) NOT NULL , `email` VARCHAR(200) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
         selectAllDemo();
-        insertStudentDemo();
+        //insertStudentDemo();
+        updateStudentDemo();
         selectAllDemo();
 
+
     }
+
+    public static void updateStudentDemo(){
+        System.out.println("\nUpdate Demo mit JDBC\n");
+        String connectionURL = "jdbc:mysql://localhost:3306/jdbc_demo"; //
+        String user = "root";
+        String pwd = "";
+        int count = 0;
+
+        try (Connection conn = DriverManager.getConnection(connectionURL, user, pwd)) {
+            System.out.println("\nVerbinding zur Datenbank hergestellt!\n");
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "UPDATE `student` SET `name` = ? WHERE `student`.`id`= 3" // ? is a placeholder to be replaced later with actual values
+            );
+            PreparedStatement preparedStatement2 = conn.prepareStatement(
+                    "UPDATE `student` SET `email` = ? WHERE `student`.`id`= 3" // ? is a placeholder to be replaced later with actual values
+            );
+            try {
+                preparedStatement.setString(1,"Peter Bohringer");     //sets the value for the name in der vorherige SQL INSERT statement.
+                preparedStatement2.setString(1,"p.bohringer@gmx.at");  //sets the value for the email in der vorherige SQL INSERT statement.
+
+                preparedStatement.executeUpdate();
+                count ++;
+                preparedStatement2.executeUpdate();
+                count ++;
+                System.out.println(count + " aktualisierte Datensätze.");
+            }catch(SQLException ex){
+                System.out.println("Folgende Fehler SQL UPDATE Statement gefunden: " + ex.getMessage());
+            }
+        } catch (SQLException e) {
+            System.out.println("Folgende Fehler beim Verbingsversuch ist aufgetreten: " + e.getMessage());
+        }
+    }
+
 
     public static void  insertStudentDemo(){
         System.out.println("\nInsert Demo mit JDBC\n");
