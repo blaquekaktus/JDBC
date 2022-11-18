@@ -46,11 +46,12 @@ public class JDBC_Demo {
         System.out.println("\nSelect Demo mit JDBC\n");
         String sqlSelectAllPersons = "Select * FROM `student`";
         String connectionURL = "jdbc:mysql://localhost:3306/jdbc_demo"; //
+        String user = "root";
+        String pwd = "";
 
-
-        try (Connection conn = DriverManager.getConnection(connectionURL, "root", "")) {
+        try (Connection conn = DriverManager.getConnection(connectionURL, user, pwd)) {
             System.out.println("\nVerbinding zur Datenbank hergestellt!\n");
-            PreparedStatement preparedStatement = conn.prepareStatement("Select * FROM `student`");
+            PreparedStatement preparedStatement = conn.prepareStatement(sqlSelectAllPersons);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()){
                int id = rs.getInt("id");
