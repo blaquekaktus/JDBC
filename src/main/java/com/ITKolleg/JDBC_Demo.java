@@ -1,8 +1,6 @@
 package com.ITKolleg;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class JDBC_Demo {
 
@@ -18,8 +16,18 @@ public class JDBC_Demo {
         System.out.println("Select Demo mit JDBC\n");
         String sqlSelectAllPersons = "Select * FROM `student`";
         String connectionURL = "jdbc:mysql://localhost:3306/jdbc_demo"; //
+
+
         try (Connection conn = DriverManager.getConnection(connectionURL, "root", "")) {
-            System.out.println("Verbinding zur Datenbank hergestellt!");
+            System.out.println("Verbinding zur Datenbank hergestellt!\n");
+            PreparedStatement preparedStatement = conn.prepareStatement("Select * FROM `student`");
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()){
+               int id = rs.getInt("id");
+               String name = rs.getString("name");
+               String email = rs.getString("email");
+                System.out.println("Student aus der Datenbank: ID " + id + ", Name: " + name + ", Email: " + email);
+            }
         } catch (SQLException e) {
             System.out.println("Folgende Fehler beim Verbingsversuch ist aufgetreten: " + e.getMessage());
         }
