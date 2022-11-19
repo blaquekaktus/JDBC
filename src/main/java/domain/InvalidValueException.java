@@ -8,10 +8,10 @@ package domain;
  *
  */
 
-public class InvalidValueException extends Throwable{
+public class InvalidValueException extends RuntimeException{
 
     /**
-     * A throwable unchecked Exception which occurs when a user attempts to assign an invalid value to a parameter.
+     * An unchecked Runtime Exception which occurs when a user attempts to assign an invalid value to a parameter.
      * @param message the message returned to the user when the exception is thrown.
      *
      */
