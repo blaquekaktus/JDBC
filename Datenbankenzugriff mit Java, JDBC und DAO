@@ -1,0 +1,39 @@
+
+
+
+Switch / If code snippets
+
+
+OLD SWITCH
+switch(input){
+                case "1":
+                    System.out.println("Kurseingabe\n");
+                    break;
+                case "2":
+                    System.out.println("Alle Kurse anzeigen\n");
+                    break;
+                case "x":
+                    System.out.println("Auf Wiedersehen");
+                    break;
+                default:
+                   inputError();
+            }
+            
+NEW SWITCH
+switch (input) {
+                case "1" -> System.out.println("Kurseingabe\n");
+                case "2" -> System.out.println("Alle Kurse anzeigen\n");
+                case "x" -> System.out.println("Auf Wiedersehen");
+                default -> inputError();
+            }
+            
+IF 
+if ("1".equals(input)) {
+                System.out.println("Kurseingabe\n");
+            } else if ("2".equals(input)) {
+                System.out.println("Alle Kurse anzeigen\n");
+            } else if ("x".equals(input)) {
+                System.out.println("Auf Wiedersehen");
+            } else {
+                inputError();
+            }
