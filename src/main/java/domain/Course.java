@@ -25,8 +25,24 @@ public class Course extends IDEntity{
      * @param id used to set the id.
      * @throws InvalidValueException Exception thrown in case the id value entered is incorrect based on the parameters set
      */
-    public Course(Long id) throws InvalidValueException {
+    public Course(Long id, String name, String description, int hours, Date beginDate, Date endDate, CourseType courseType) throws InvalidValueException {
         super(id);
+        this.setName(name);
+        this.setDescription(description);
+        this.setHours(hours);
+        this.setBeginDate(beginDate);
+        this.setEndDate(endDate);
+        this.setCourseType(courseType);
+    }
+
+    public Course(String name, String description, int hours, Date beginDate, Date endDate, CourseType courseType) throws InvalidValueException {
+        super(null);
+        this.setName(name);
+        this.setDescription(description);
+        this.setHours(hours);
+        this.setBeginDate(beginDate);
+        this.setEndDate(endDate);
+        this.setCourseType(courseType);
     }
 
     /**
@@ -74,7 +90,7 @@ public class Course extends IDEntity{
 
     /**
      * Returns the value of the instance variable 'hours'
-     * @return the length of the course in hours as an integer)
+     * @return the length of the course in hours as an integer
      */
     public int getHours() {
         return hours;
