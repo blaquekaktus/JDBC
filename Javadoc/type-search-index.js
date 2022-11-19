@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"domain","l":"BaseEntity"},{"p":"ui","l":"Cli"},{"p":"domain","l":"Course"},{"p":"domain","l":"CourseType"},{"p":"domain","l":"InvalidValueException"},{"p":"<Unnamed>","l":"Main"},{"p":"dataaccess","l":"MySQLDatabaseConnection"}];updateSearchResults();
