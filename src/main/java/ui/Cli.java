@@ -1,5 +1,10 @@
 package ui;
 
+import dataaccess.MyCourseRepository;
+import dataaccess.MySqlDatabaseException;
+import domain.Course;
+
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -12,12 +17,15 @@ import java.util.Scanner;
 
 public class Cli {
     Scanner scan;
+    MyCourseRepository repo;
+
 
     /**
      * class constructor
      */
-    public Cli(){
+    public Cli(MyCourseRepository repo){
         this.scan = new Scanner(System.in);
+        this.repo = repo;
     }
 
     /**
@@ -47,12 +55,32 @@ public class Cli {
             input = scan.nextLine();
 
             switch (input) {
-                case "1" -> System.out.println("Kurseingabe\n");
-                case "2" -> System.out.println("Alle Kurse anzeigen\n");
+                case "1" -> System.out.println("Kurs Eingeben");
+                case "2" -> showAllCourses();
                 case "x" -> System.out.println("Auf Wiedersehen");
                 default -> inputError();
             }
         }
         scan.close();
+    }
+
+    private void showAllCourses() throws MySqlDatabaseException{
+        List<Course> list = null;
+
+        list = repo.getAll();
+
+        try {
+            if (list.size() > 0) {
+                for (Course course : list) {
+                    System.out.println(course);
+                }
+            } else {
+                System.out.println("Keine Kurse vorhanden!");
+            }
+        }catch(MySqlDatabaseException e){
+            System.out.println("Datenbankfehler bei Anzeige aller Kurse: " + e.getMessage());
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler ist bei anzeige alle Kurse " + exception.getMessage());
+        }
     }
 }

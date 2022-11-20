@@ -1,4 +1,5 @@
 import dataaccess.MySQLDatabaseConnection;
+import dataaccess.MySqlCourseRepository;
 import ui.Cli;
 
 import java.sql.Connection;
@@ -8,7 +9,15 @@ public class Main {
 
     public static void main(String[] args) {
 
-
+        Cli myCli = null;
+        try {
+            myCli = new Cli(new MySqlCourseRepository());
+        } catch (SQLException e) {
+            System.out.println("Datenbank Fehler: " + e.getMessage() + "\n SQL State: " + e.getSQLState());
+        } catch (ClassNotFoundException e) {
+            System.out.println("Datenbank Fehler: " + e.getMessage());
+        }
+        myCli.start();
 
         try {
             Connection myConnection =
@@ -19,10 +28,6 @@ public class Main {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        Cli myCli = new Cli();
-        myCli.start();
-
     }
 
 
