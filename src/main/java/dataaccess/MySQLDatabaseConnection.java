@@ -32,8 +32,9 @@ public class MySQLDatabaseConnection {
      * @see ClassNotFoundException
      * @see SQLException
      */
+
     public static Connection getConn(String url, String user, String pwd) throws ClassNotFoundException, SQLException {
-        if(conn!=null){         //in the case that the connection already exists (not null)
+        if(conn!=null){                                          //in the case that the connection already exists (not null)
             return conn;
         }else{
             Class.forName("com.mysql.cj.jdbc.Driver"); //throws the ClassNotFoundException if the class is not found
