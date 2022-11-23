@@ -10,7 +10,7 @@ import java.sql.Date;
  *
  */
 
-public class Course extends IDEntity{
+public class Course extends BaseEntity{
 
     private String name;
     private String description;
@@ -20,9 +20,9 @@ public class Course extends IDEntity{
     private CourseType courseType;
 
     /**
-     * Default IDEntity Constructor.
+     * Class Constructor.
      *
-     * @param id used to set the id.
+     * @param id the id of the Course Object
      * @throws InvalidValueException Exception thrown in case the id value entered is incorrect based on the parameters set
      */
     public Course(Long id, String name, String description, int hours, Date beginDate, Date endDate, CourseType courseType) throws InvalidValueException {
@@ -34,6 +34,18 @@ public class Course extends IDEntity{
         this.setEndDate(endDate);
         this.setCourseType(courseType);
     }
+
+    /**
+     * Class Constructor
+     *
+     * @param name  String the name of the Course Object
+     * @param description String the description of the Course Object
+     * @param hours String the name of the Course Object
+     * @param beginDate
+     * @param endDate
+     * @param courseType
+     * @throws InvalidValueException
+     */
 
     public Course(String name, String description, int hours, Date beginDate, Date endDate, CourseType courseType) throws InvalidValueException {
         super(null);
@@ -161,7 +173,7 @@ public class Course extends IDEntity{
                     throw new InvalidValueException("Kursende muss NACH Kursbegin sein!"); //throws an exception if the end date is not after the start date
                 }
             }else{
-                this.beginDate = beginDate;
+                this.endDate = endDate;
             }
         }else{
             throw new InvalidValueException("Enddatum darf nicht null/leer sein!");
@@ -182,17 +194,21 @@ public class Course extends IDEntity{
      * @throws InvalidValueException an error message is displayed in case the value entered does not meet the conditions set in this method
      */
     public void setCourseType(CourseType courseType) throws InvalidValueException{
-        if(courseType != null) {                        // checks that the courde type is not empty(null)
+        if(courseType != null) {                        // checks that the course type is not empty(null)
             this.courseType = courseType;
         }else{                                          // the following error message is displayed
             throw new InvalidValueException("Kurstyp darf nicht null/leer sein!");
         }
     }
 
-    @Override
+    /**
+     *
+     * Returns the course details as a  string
+     * @return String Returns the course details as a  string
+     */
     public String toString() {
         return "Course{" +
-                "id=" + id +
+                "id=" + this.getID() + '\'' +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", hours=" + hours +

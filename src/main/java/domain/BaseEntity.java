@@ -7,16 +7,19 @@ package domain;
  * @version 1.0 19.11.2022
  *
  */
-public abstract class IDEntity {
+public abstract class BaseEntity {
 
     public Long id;
 
+    public BaseEntity(Long id) {
+    }
+
     /**
-     * Default IDEntity Constructor.
+     * Default BaseEntity Constructor.
      * @param id used to set the id.
      * @throws InvalidValueException Exception thrown in case the id value entered is incorrect based on the parameters set
      */
-    public IDEntity(Long id) throws InvalidValueException {
+    public void BaseEntity(Long id) throws InvalidValueException {
         setID(id);      //call the setID method in the constructor in order to avoid reproducing the business logic of the code.
     }
 
@@ -41,9 +44,13 @@ public abstract class IDEntity {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
-        return "IDEntity{" +
+        return "BaseEntity{" +
                 "id=" + id +
                 '}';
     }
