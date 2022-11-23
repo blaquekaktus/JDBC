@@ -39,18 +39,52 @@ public class MySqlCourseRepository implements MyCourseRepository {
     }
 
     /**
-     * @param entity
-     * @return 
+     * inserts a new Course Object (entity) into the Database
+     * The Course Entity Properties are mapped to the Fields of the Database
+     *
+     * @param entity Optional The Course Object if successfully added to the database or an empty Optional Object is the INSERT Statement was unsuccessful.
+     * @return Course Object (optional)
      */
     @Override
-    public Optional<Course> insert(Course entity) {
-        return Optional.empty();
+    public Optional<Course> insert(Course entity){
+        Assert.notNull(entity);                     //checks to ensure that the Course Object to be added is not null
+        try{
+            String sql = "INSERT INTO `courses` (`name`, `description`, `hours`, `begindate`, `enddate`, `coursetype`) VALUES (?,?,?,?,?,?) ";
+            // The SQL INSERT statement (can be auto copied directly from the database to ensure that the syntax is correct.
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            // (Statement.RETURN_GENERATED_KEYS) Returns the auto generated keys (IDs)
+            preparedStatement.setString(1, entity.getName());           // Relational mapping of the Object Properties to the database fields
+            preparedStatement.setString(2, entity.getDescription());
+            preparedStatement.setInt(3, entity.getHours());
+            preparedStatement.setDate(4, entity.getBeginDate());
+            preparedStatement.setDate(5, entity.getEndDate());
+            preparedStatement.setString(6, entity.getCourseType().toString()); //Course Type is saved as string in the database
+
+            int affectedRows = preparedStatement.executeUpdate();           // Returns how many new rows were added to the database
+
+            if(affectedRows == 0){                                          // In this case we know that the INSERT statement did not work
+                return Optional.empty();
+            }
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys(); // The generated keys are stored in the ResultSet Object generatedKeys
+
+            if(generatedKeys.next()){
+                return this.getById(generatedKeys.getLong(1));    // Returns the Objects with the Ids stored in the ResultSet
+            }else{
+                return Optional.empty();                                     // Returns and empty Optional if the ResultSet is empty (in this case the INSERT STATEMENT did not execute successfully!)
+            }
+        }catch(SQLException sqlException){                                   // To catch any SQL exceptions
+            throw new MySqlDatabaseException(sqlException.getMessage());
+        }
     }
 
     /**
+     * Returns an Optional Object
+     * If the Course is found an Optional Course object is returned and
+     * an empty Optional is returned if the Course object is not found in the database.
      *
-     * @param id
-     * @return
+     *
+     * @param id Long The ID of the Course
+     * @return Optional<Course>|Optional<> Returns an Optional Course Object if the Course is found or an empty Optional is the Course object does not.
      */
     @Override
     public Optional<Course> getById(Long id){
