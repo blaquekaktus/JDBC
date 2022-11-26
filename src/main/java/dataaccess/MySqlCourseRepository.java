@@ -73,7 +73,7 @@ public class MySqlCourseRepository implements MyCourseRepository {
                 return Optional.empty();                                     // Returns and empty Optional if the ResultSet is empty (in this case the INSERT STATEMENT did not execute successfully!)
             }
         }catch(SQLException sqlException){                                   // To catch any SQL exceptions
-            throw new MySqlDatabaseException(sqlException.getMessage());
+            throw new DatabaseException(sqlException.getMessage());
         }
     }
 
@@ -109,7 +109,7 @@ public class MySqlCourseRepository implements MyCourseRepository {
                 );
                 return Optional.of(course);
             }catch(SQLException sqlException){
-                throw new MySqlDatabaseException(sqlException.getMessage());
+                throw new DatabaseException(sqlException.getMessage());
             }
         }
     }
@@ -125,7 +125,7 @@ public class MySqlCourseRepository implements MyCourseRepository {
             return courseCount;
         }
         catch (SQLException sqlException){
-            throw new MySqlDatabaseException(sqlException.getMessage());
+            throw new DatabaseException(sqlException.getMessage());
         }
 
     }
@@ -134,7 +134,7 @@ public class MySqlCourseRepository implements MyCourseRepository {
      * @return
      */
     @Override
-    public List<Course> getAll() throws MySqlDatabaseException{
+    public List<Course> getAll() throws DatabaseException {
         // Hier werden Daten (Eine Zeile) aus der Relational Datenbank zum Objekt 'gemappt'!
         String sql = "SELECT * FROM `courses`";                                 // SELECT ALL statement saved as String 'sql'.
         try {
@@ -154,7 +154,7 @@ public class MySqlCourseRepository implements MyCourseRepository {
             }
             return courseList;
         } catch (SQLException e) {
-            throw new MySqlDatabaseException("Database error occurred!");
+            throw new DatabaseException("Database error occurred!");
         }
     }
 
@@ -164,7 +164,33 @@ public class MySqlCourseRepository implements MyCourseRepository {
      */
     @Override
     public Optional<Course> update(Course entity) {
-        return Optional.empty();
+
+        Assert.notNull(entity);
+        String sql = "UPDATE `courses` SET `name` = ?, `description` = ?, `hours` = ?, `begindate` = ?, `enddate` = ?, `coursetype` = ? WHERE `courses`.`id` = ?";
+        if(countCoursesInDbWithId(entity.getID())==0) {
+            return Optional.empty();
+        }else{
+            try{
+                PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setString(1, entity.getName());
+                preparedStatement.setString(2, entity.getDescription());
+                preparedStatement.setInt(3, entity.getHours());
+                preparedStatement.setDate(4, entity.getBeginDate());
+                preparedStatement.setDate(5, entity.getEndDate());
+                preparedStatement.setString(6, entity.getCourseType().toString());
+                preparedStatement.setLong(7, entity.getID());
+
+                int affectedRows = preparedStatement.executeUpdate();
+                if (affectedRows == 0){
+                    return Optional.empty();
+                }
+                else{
+                    return this.getById(entity.getID());
+                }
+            }catch (SQLException sqlException) {
+                throw new DatabaseException(sqlException.getMessage());
+            }
+        }
     }
 
     /**

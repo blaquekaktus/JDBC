@@ -1,7 +1,7 @@
 package ui;
 
 import dataaccess.MyCourseRepository;
-import dataaccess.MySqlDatabaseException;
+import dataaccess.DatabaseException;
 import domain.Course;
 import domain.CourseType;
 import domain.InvalidValueException;
@@ -71,7 +71,12 @@ public class Cli {
         scan.close();                   //closes the scanner
     }
 
-    private void addCourse() throws MySqlDatabaseException, IllegalArgumentException{
+    /**
+     * adds a new Course object to the database
+     * @throws DatabaseException
+     * @throws IllegalArgumentException
+     */
+    private void addCourse() throws DatabaseException, IllegalArgumentException{
         String name, description;                               //Temporary Variables for each Object Property, used to store the information entered by the user
         int hours;
         Date beginDate, endDate;
@@ -117,8 +122,8 @@ public class Cli {
             System.out.println("Kursdaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
             // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
         }
-        catch(MySqlDatabaseException mySqlDatabaseException){
-            System.out.println("Datenbankfehler beim Einfügen: " + mySqlDatabaseException.getMessage());
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Einfügen: " + databaseException.getMessage());
             // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
         }
         catch(Exception exception){
@@ -128,9 +133,10 @@ public class Cli {
     }
 
     /**
-     * Initializes the Command Line Interface and manages its behaviour.
+     * Displays all the courses in the database
+     * @throws DatabaseException
      */
-    private void showAllCourses() throws MySqlDatabaseException{
+    private void showAllCourses() throws DatabaseException {
         List<Course> list = null;
 
         list = repo.getAll();
@@ -143,7 +149,7 @@ public class Cli {
             } else {
                 System.out.println("Keine Kurse vorhanden!");
             }
-        }catch(MySqlDatabaseException e){
+        }catch(DatabaseException e){
             System.out.println("Datenbankfehler bei Anzeige aller Kurse: " + e.getMessage());
         }catch(Exception exception){
             System.out.println("Unbekannter Fehler ist bei anzeigen alle Kurse: " + exception.getMessage());
@@ -154,7 +160,7 @@ public class Cli {
      * Prints the details of the course corresponding to the ID entered by the user on the CLI
      * If the course isn't found in the database an error message is shown
      */
-    private void showCourseDetails() throws MySqlDatabaseException{
+    private void showCourseDetails() throws DatabaseException {
         System.out.println("Für welchen Kurs möchten Sie die kursdetails anzeigen?");
         Long courseId = Long.parseLong(scan.nextLine());
         try{
@@ -165,7 +171,7 @@ public class Cli {
                 System.out.println("Kurs mit der ID " + courseId + " nicht gefunden");
             }
 
-        }catch(MySqlDatabaseException databaseException){
+        }catch(DatabaseException databaseException){
             System.out.println("Datenbankfehler bei Kurs-Detailanzeigen " + databaseException.getMessage());
 
         }catch(Exception exception){
