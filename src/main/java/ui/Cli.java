@@ -89,11 +89,23 @@ public class Cli {
             System.out.println("Hours: ");
             hours = Integer.parseInt(scan.nextLine());
             // Text Input (String) der CLI  converted to type 'int' through Integer.parseInt(number) method
-            // Through consistent use of consistent of 'scan.nextLine' instead of 'scan.nextInt' etc the risks of exceptions occurring due to the user pressing the enter key twice  is eliminated
-            if(hours<=0) throw new IllegalArgumentException("Eingabe muss mehr als 0 sein!");
+            // Through consistent use of 'scan.nextLine' instead of 'scan.nextInt' etc., the risks of exceptions occurring due to the user pressing the enter key twice is eliminated
+            if(hours<=0) throw new IllegalArgumentException("Eingabe muss mindestens 1 sein!");
             System.out.println("Startdatum (YYYY-MM-DD): ");
+            beginDate = Date.valueOf(scan.nextLine());
+            System.out.println("Enddatum (YYYY-MM-DD): ");
+            endDate = Date.valueOf(scan.nextLine());
+            System.out.println("KUrs (ZA,BF,FF,OE) ");
+            courseType =CourseType.valueOf(scan.nextLine());
 
-            System.out.println("Startdatum (YYYY-MM-DD): ");
+            Optional<Course> optionalCourse = repo.insert(
+                    new Course(name, description, hours, beginDate, endDate, courseType)
+            );
+            if(optionalCourse.isPresent()){
+                System.out.println("Kurs angelegt: " + optionalCourse.get());
+            }else{
+                System.out.println("Kurs könnte nicht angelegt werden");
+            }
 
 
         }
