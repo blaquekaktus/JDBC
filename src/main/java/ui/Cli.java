@@ -64,6 +64,7 @@ public class Cli {
                 case "1" -> addCourse();
                 case "2" -> showAllCourses();
                 case "3" -> showCourseDetails();
+                case "4" -> updateCourseDetails();
                 case "x" -> System.out.println("Auf Wiedersehen");
                 default -> inputError();
             }
@@ -161,7 +162,7 @@ public class Cli {
      * If the course isn't found in the database an error message is shown
      */
     private void showCourseDetails() throws DatabaseException {
-        System.out.println("Für welchen Kurs möchten Sie die kursdetails anzeigen?");
+        System.out.println("Für welchen Kurs möchten Sie die Kursdetails anzeigen?");
         Long courseId = Long.parseLong(scan.nextLine());
         try{
             Optional<Course>courseOptional = repo.getById(courseId);
@@ -176,6 +177,58 @@ public class Cli {
 
         }catch(Exception exception){
             System.out.println("Unbekannter Fehler bei Kurs-Detailanzeigen " + exception.getMessage());
+        }
+    }
+
+    private void updateCourseDetails() throws DatabaseException {
+        System.out.println("Für welchen Kurs möchten Sie die Kursdetails ändern?");
+        Long courseId = Long.parseLong(scan.nextLine());
+        try{
+            Optional<Course>courseOptional = repo.getById(courseId);
+            if(courseOptional.isEmpty()){
+                System.out.println("Kurs mit der ID " + courseId + " nicht gefunden");
+            }else{
+                Course course  = courseOptional.get();
+                System.out.println("Anderung für folgenden Kurs: ");
+                System.out.println(course);
+
+                String name, description, hours, startDate, endDate, courseType;
+                System.out.println("Bitte neue Kursdaten angeben (Enter,falls keine Änderung gewünscht ist): ");
+                System.out.println("Name: ");
+                name = scan.nextLine();
+                System.out.println("Beschreibung: ");
+                description = scan.nextLine();
+                System.out.println("Stundenanzahl: ");
+                hours = scan.nextLine();
+                System.out.println("Startdatum (YYYY-MM-DD): ");
+                startDate = scan.nextLine();
+                System.out.println("Enddatum (YYYY-MM-DD): ");
+                endDate= scan.nextLine();
+                System.out.println("Kurstyp (ZA/BF/FF/OE");
+                courseType = scan.nextLine();
+
+                Optional<Course>optionalCourseUpdated = repo.update(
+                        new Course(
+                                course.getID(),
+                                name.equals("") ? course.getName() : name,
+                                description.equals("")? course.getDescription() : description,
+                                hours.equals("")?course.getHours() : Integer.parseInt(hours),
+                                startDate.equals("") ? course.getBeginDate() : Date.valueOf(startDate),
+                                endDate.equals("") ? course.getEndDate() : Date.valueOf(endDate),
+                                courseType.equals("") ? course.getCourseType() : CourseType.valueOf(courseType)
+                        ));
+                optionalCourseUpdated.ifPresentOrElse(
+                        (c)-> System.out.println("Kurs aktualisiert: " + c),
+                        () -> System.out.println("Kurs konnte nicht aktualisiert werden!")
+                );
+
+            }
+
+        }catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler bei Kurs-Detailanzeigen: " + databaseException.getMessage());
+
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler bei Kurs-Detailanzeigen: " + exception.getMessage());
         }
     }
 }
