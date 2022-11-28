@@ -40,7 +40,7 @@ public class Cli {
     private void showMenu(){
         System.out.println("\n---------------------KURS MANAGEMENT---------------------------\n");
         System.out.println("Bitte Geben Sie der Zahl ihre Wahl ein\n");
-        System.out.println("\t1: Kurs eingeben \n\t2: Alle Kurse anzeigen \n\t3: Kursdetails anzeigen \n\tx: Program beenden");
+        System.out.println("\t1: Kurs eingeben \n\t2: Alle Kurse anzeigen \n\t3: Kursdetails anzeigen \n\t4: Kursdetails ändern \n\tx: Program beenden");
     }
 
     /**
@@ -65,6 +65,7 @@ public class Cli {
                 case "2" -> showAllCourses();
                 case "3" -> showCourseDetails();
                 case "4" -> updateCourseDetails();
+                case "5" -> deleteCourse();
                 case "x" -> System.out.println("Auf Wiedersehen");
                 default -> inputError();
             }
@@ -74,7 +75,7 @@ public class Cli {
 
     /**
      * adds a new Course object to the database
-     * @throws DatabaseException
+     *   @throws DatabaseException
      * @throws IllegalArgumentException
      */
     private void addCourse() throws DatabaseException, IllegalArgumentException{
@@ -180,15 +181,20 @@ public class Cli {
         }
     }
 
+    /**
+     * Allows the user to change the fields of a course entity in the database.
+     *
+     * @throws DatabaseException
+     */
     private void updateCourseDetails() throws DatabaseException {
         System.out.println("Für welchen Kurs möchten Sie die Kursdetails ändern?");
         Long courseId = Long.parseLong(scan.nextLine());
-        try{
-            Optional<Course>courseOptional = repo.getById(courseId);
-            if(courseOptional.isEmpty()){
+        try {
+            Optional<Course> courseOptional = repo.getById(courseId);
+            if (courseOptional.isEmpty()) {
                 System.out.println("Kurs mit der ID " + courseId + " nicht gefunden");
-            }else{
-                Course course  = courseOptional.get();
+            } else {
+                Course course = courseOptional.get();
                 System.out.println("Anderung für folgenden Kurs: ");
                 System.out.println(course);
 
@@ -203,32 +209,66 @@ public class Cli {
                 System.out.println("Startdatum (YYYY-MM-DD): ");
                 startDate = scan.nextLine();
                 System.out.println("Enddatum (YYYY-MM-DD): ");
-                endDate= scan.nextLine();
+                endDate = scan.nextLine();
                 System.out.println("Kurstyp (ZA/BF/FF/OE");
                 courseType = scan.nextLine();
 
-                Optional<Course>optionalCourseUpdated = repo.update(
+                Optional<Course> optionalCourseUpdated = repo.update(
                         new Course(
                                 course.getID(),
                                 name.equals("") ? course.getName() : name,
-                                description.equals("")? course.getDescription() : description,
-                                hours.equals("")?course.getHours() : Integer.parseInt(hours),
+                                description.equals("") ? course.getDescription() : description,
+                                hours.equals("") ? course.getHours() : Integer.parseInt(hours),
                                 startDate.equals("") ? course.getBeginDate() : Date.valueOf(startDate),
                                 endDate.equals("") ? course.getEndDate() : Date.valueOf(endDate),
                                 courseType.equals("") ? course.getCourseType() : CourseType.valueOf(courseType)
                         ));
                 optionalCourseUpdated.ifPresentOrElse(
-                        (c)-> System.out.println("Kurs aktualisiert: " + c),
+                        (c) -> System.out.println("Kurs aktualisiert: " + c),
                         () -> System.out.println("Kurs konnte nicht aktualisiert werden!")
                 );
-
             }
-
-        }catch(DatabaseException databaseException){
-            System.out.println("Datenbankfehler bei Kurs-Detailanzeigen: " + databaseException.getMessage());
-
-        }catch(Exception exception){
-            System.out.println("Unbekannter Fehler bei Kurs-Detailanzeigen: " + exception.getMessage());
         }
+        catch(IllegalArgumentException illegalArgumentException){
+                // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
+                System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
+            }
+        catch(InvalidValueException invalidValueException){
+                System.out.println("Kursdaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
+                // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
+            }
+        catch(DatabaseException databaseException){
+                System.out.println("Datenbankfehler bei Kurs-Detailanzeigen: " + databaseException.getMessage());
+                // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
+            }
+        catch(Exception exception){
+                System.out.println("Unbekannter Fehler bei Kurs-Detailanzeigen: " + exception.getMessage());
+                // Handles any other exceptions thrown. Returns an error message with the details of the exception.
+            }
+    }
+
+    public void deleteCourse(){
+        System.out.println("Welchen Kurs möchten Sie löschen? Bitte ID eingeben: ");
+        Long courseToDeleteID = Long.parseLong(scan.nextLine());
+
+        try {
+            repo.deleteById(courseToDeleteID);
+        }
+        catch(IllegalArgumentException illegalArgumentException){
+                // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
+                System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
+            }
+        catch(InvalidValueException invalidValueException){
+                System.out.println("Kursdaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
+                // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
+            }
+        catch(DatabaseException databaseException){
+                System.out.println("Datenbankfehler beim löschen: " + databaseException.getMessage());
+                // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
+            }
+        catch(Exception exception){
+                System.out.println("Unbekannter Fehler beim löschen: " + exception.getMessage());
+                // Handles any other exceptions thrown. Returns an error message with the details of the exception.
+            }
     }
 }

@@ -9,6 +9,16 @@ public class Main {
 
     public static void main(String[] args) {
 
+        try {
+            Connection myConnection =
+                    MySQLDatabaseConnection.getConn("jdbc:mysql://localhost:3306/kurssystem", "root", "");
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         Cli myCli = null;
         try {
             myCli = new Cli(new MySqlCourseRepository());
@@ -19,15 +29,6 @@ public class Main {
         }
         myCli.start();
 
-        try {
-            Connection myConnection =
-                    MySQLDatabaseConnection.getConn("jdbc:mysql://localhost:3306/kurssystem", "root", "");
-            System.out.println("\nVerbindung hergestellt");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
 

@@ -194,11 +194,21 @@ public class MySqlCourseRepository implements MyCourseRepository {
     }
 
     /**
-     * @param id
+     * @param id ID of the course to be deleted
      */
     @Override
-    public void deleteById(Long id) {
-
+    public void deleteById(Long id) throws {
+        Assert.notNull(id);
+        String sql = "DELETE FROM `courses` WHERE `id` = ?";
+        try{
+            if(countCoursesInDbWithId(id)==1){
+                PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setLong(1, id);
+                preparedStatement.executeUpdate();
+            }
+        }catch(SQLException sqlException){
+            throw new DatabaseException(sqlException.getMessage());
+        }
     }
 
     /**
