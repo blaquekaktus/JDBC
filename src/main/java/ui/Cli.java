@@ -7,6 +7,8 @@ import domain.CourseType;
 import domain.InvalidValueException;
 
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -31,7 +33,7 @@ public class Cli {
      */
     public Cli(MyCourseRepository repo){
         this.scan = new Scanner(System.in);
-        this.repo = repo;
+        this.repo = repo;                       //repository object
     }
 
     /**
@@ -40,7 +42,17 @@ public class Cli {
     private void showMenu(){
         System.out.println("\n---------------------KURS MANAGEMENT---------------------------\n");
         System.out.println("Bitte Geben Sie der Zahl ihre Wahl ein\n");
-        System.out.println("\t1: Kurs eingeben \n\t2: Alle Kurse anzeigen \n\t3: Kursdetails anzeigen \n\t4: Kursdetails ändern \n\tx: Program beenden");
+        System.out.println(
+                """
+                        \t1: Kurs eingeben\s
+                        \t2: Alle Kurse anzeigen\s
+                        \t3: Kursdetails anzeigen\s
+                        \t4: Kursdetails ändern\s
+                        \t5: Kurs löschen\s
+                        \t6: Kurs beim name oder description suchen\s
+                        \t7: 
+                        \t8: 
+                        \tx: Program beenden""");
     }
 
     /**
@@ -48,7 +60,7 @@ public class Cli {
      */
     private void inputError(){
         System.out.println("Falsche Eingabe!\n" +
-                "Bitte geben Sie nur 1, 2 oder x ein: ");
+                "Bitte geben Sie nur die vorgegebene Nummern (1 - 8) oder x ein: ");
     }
 
     /**
@@ -66,6 +78,7 @@ public class Cli {
                 case "3" -> showCourseDetails();
                 case "4" -> updateCourseDetails();
                 case "5" -> deleteCourse();
+                case "6" -> courseSearch();
                 case "x" -> System.out.println("Auf Wiedersehen");
                 default -> inputError();
             }
@@ -135,7 +148,7 @@ public class Cli {
     }
 
     /**
-     * Displays all the courses in the database
+     * Displays all the courses found in the database
      * @throws DatabaseException
      */
     private void showAllCourses() throws DatabaseException {
@@ -190,16 +203,16 @@ public class Cli {
         System.out.println("Für welchen Kurs möchten Sie die Kursdetails ändern?");
         Long courseId = Long.parseLong(scan.nextLine());
         try {
-            Optional<Course> courseOptional = repo.getById(courseId);
-            if (courseOptional.isEmpty()) {
-                System.out.println("Kurs mit der ID " + courseId + " nicht gefunden");
+            Optional<Course> courseOptional = repo.getById(courseId);                   //get the course by the ID
+            if (courseOptional.isEmpty()) {                                             //check whether a course with the ID entered exists.
+                System.out.println("Kurs mit der ID " + courseId + " nicht gefunden");   // if the course doesn't exist then the user is informed
             } else {
                 Course course = courseOptional.get();
                 System.out.println("Anderung für folgenden Kurs: ");
                 System.out.println(course);
 
-                String name, description, hours, startDate, endDate, courseType;
-                System.out.println("Bitte neue Kursdaten angeben (Enter,falls keine Änderung gewünscht ist): ");
+                String name, description, hours, startDate, endDate, courseType;            //Temporary variables to store the new course information entered by the user from the CLI
+                System.out.println("Bitte neue Kursdaten angeben (Enter,falls keine Änderung gewünscht ist): "); // set the variables to the new values given by user
                 System.out.println("Name: ");
                 name = scan.nextLine();
                 System.out.println("Beschreibung: ");
@@ -213,10 +226,11 @@ public class Cli {
                 System.out.println("Kurstyp (ZA/BF/FF/OE");
                 courseType = scan.nextLine();
 
+                //A new Optional course Object is created from the repository and updated using the update method
                 Optional<Course> optionalCourseUpdated = repo.update(
-                        new Course(
+                        new Course(                                                             // creates a new course
                                 course.getID(),
-                                name.equals("") ? course.getName() : name,
+                                name.equals("") ? course.getName() : name,                      // if the name is empty (user pressed Enter) then the old value is retained or else the name entered is used.
                                 description.equals("") ? course.getDescription() : description,
                                 hours.equals("") ? course.getHours() : Integer.parseInt(hours),
                                 startDate.equals("") ? course.getBeginDate() : Date.valueOf(startDate),
@@ -224,8 +238,8 @@ public class Cli {
                                 courseType.equals("") ? course.getCourseType() : CourseType.valueOf(courseType)
                         ));
                 optionalCourseUpdated.ifPresentOrElse(
-                        (c) -> System.out.println("Kurs aktualisiert: " + c),
-                        () -> System.out.println("Kurs konnte nicht aktualisiert werden!")
+                        (c) -> System.out.println("Kurs aktualisiert: " + c),                   // If the course was updated then this message is displayed
+                        () -> System.out.println("Kurs konnte nicht aktualisiert werden!")      // If no course was updated then this message is displayed
                 );
             }
         }
@@ -247,6 +261,10 @@ public class Cli {
             }
     }
 
+    /**
+     * Removes a course from the database
+     * which corresponds to the ID number enter by the user
+     */
     public void deleteCourse(){
         System.out.println("Welchen Kurs möchten Sie löschen? Bitte ID eingeben: ");
         Long courseToDeleteID = Long.parseLong(scan.nextLine());
@@ -258,10 +276,6 @@ public class Cli {
                 // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
                 System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
             }
-        catch(InvalidValueException invalidValueException){
-                System.out.println("Kursdaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
-                // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
-            }
         catch(DatabaseException databaseException){
                 System.out.println("Datenbankfehler beim löschen: " + databaseException.getMessage());
                 // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
@@ -271,4 +285,23 @@ public class Cli {
                 // Handles any other exceptions thrown. Returns an error message with the details of the exception.
             }
     }
+
+    private void courseSearch(){
+        System.out.println("Geben Sie einen Suchbegriff an!");
+        String searchText = scan.nextLine();
+        List<Course>courseList;
+        try{
+            courseList = repo.findAllCoursesByNameOrDescription(searchText);
+            for (Course course: courseList){
+                System.out.println(course);
+            }
+
+        }catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Kurs Suche: " + databaseException.getMessage());
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler beim Kurs Suche: " + exception.getMessage());
+        }
+    }
+
+
 }

@@ -45,8 +45,8 @@ public abstract class BaseEntity {
     }
 
     /**
-     *
-     * @return
+     * coverts the ID from an integer to a string
+     * @return a String
      */
     @Override
     public String toString() {
