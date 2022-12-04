@@ -48,7 +48,7 @@ public class Cli {
      */
     private void inputError(){
         System.out.println("Falsche Eingabe!\n" +
-                "Bitte geben Sie nur 1, 2 oder x ein: ");
+                "Bitte geben Sie nur 1, 2, 3, 4 oder x ein: ");
     }
 
     /**
@@ -82,7 +82,7 @@ public class Cli {
         String name, description;                               //Temporary Variables for each Object Property, used to store the information entered by the user
         int hours;
         Date beginDate, endDate;
-        CourseType courseType;
+        CourseType courseType;                                  //
 
 
         try{
