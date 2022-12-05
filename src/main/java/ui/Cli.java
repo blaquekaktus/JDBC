@@ -49,10 +49,12 @@ public class Cli {
                         \t3: Kursdetails anzeigen\s
                         \t4: Kursdetails ändern\s
                         \t5: Kurs löschen\s
-                        \t6: Kurs beim name oder description suchen\s
-                        \t7: 
-                        \t8: 
-                        \tx: Program beenden""");
+                        \t6: Kurs beim Name oder Beschreibung suchen\s
+                        \t7: Alle laufende Kurse anzeigen\s 
+                        \t8: Kurs bei der Name finden\s
+                        \t9: Kurs bei der Beschreibung finden\s
+                        \t10: Kurs bei Start Datum finden \s
+                        \tx: Program beenden\n""");
     }
 
     /**
@@ -79,6 +81,10 @@ public class Cli {
                 case "4" -> updateCourseDetails();
                 case "5" -> deleteCourse();
                 case "6" -> courseSearch();
+                case "7" -> runningCourses();
+                case "8" -> courseSearchbyName();
+                case "9" -> courseSearchbyDesc();
+                case "10" ->coursesByStart();
                 case "x" -> System.out.println("Auf Wiedersehen");
                 default -> inputError();
             }
@@ -115,7 +121,7 @@ public class Cli {
             beginDate = Date.valueOf(scan.nextLine());
             System.out.println("Enddatum (YYYY-MM-DD): ");
             endDate = Date.valueOf(scan.nextLine());
-            System.out.println("KUrs (ZA,BF,FF,OE) ");
+            System.out.println("Kurs (ZA,BF,FF,OE) ");
             courseType =CourseType.valueOf(scan.nextLine());
 
             Optional<Course> optionalCourse = repo.insert(
@@ -286,6 +292,9 @@ public class Cli {
             }
     }
 
+    /**
+     * Returns an Arraylist of Courses based on the user search
+     */
     private void courseSearch(){
         System.out.println("Geben Sie einen Suchbegriff an!");
         String searchText = scan.nextLine();
@@ -300,6 +309,79 @@ public class Cli {
             System.out.println("Datenbankfehler beim Kurs Suche: " + databaseException.getMessage());
         }catch(Exception exception){
             System.out.println("Unbekannter Fehler beim Kurs Suche: " + exception.getMessage());
+        }
+    }
+
+    /**
+     * Returns an Arraylist of Courses based on the user search
+     */
+    private void courseSearchbyName(){
+        System.out.println("Geben Sie der Kurs Name (oder ein Teil davon) ein");
+        String searchText = scan.nextLine();
+        List<Course>courseList;
+        try{
+            courseList = repo.findAllCoursesByName(searchText);
+            for (Course course: courseList){
+                System.out.println(course);
+            }
+
+        }catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Kurs Suche: " + databaseException.getMessage());
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler beim Kurs Suche: " + exception.getMessage());
+        }
+    }
+
+    /**
+     * Returns an Arraylist of Courses based on the user search
+     */
+    private void courseSearchbyDesc(){
+        System.out.println("Geben Sie der Kurs Description (oder ein Teil davon) ein");
+        String searchText = scan.nextLine();
+        List<Course>courseList;
+        try{
+            courseList = repo.findAllCoursesByDescription(searchText);
+            for (Course course: courseList){
+                System.out.println(course);
+            }
+
+        }catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Kurs Suche: " + databaseException.getMessage());
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler beim Kurs Suche: " + exception.getMessage());
+        }
+    }
+
+    /**
+     * Returns an Arraylist of Courses that are currently running
+     */
+    private void runningCourses(){
+        System.out.println("Aktuell laufende Kurse: ");
+        List<Course>list;
+        try{
+            list = repo.findAllRunningCourses();  //calls the method from the MySqlCourseRepository to find all courses currently running and save them in list
+            for (Course course : list){           // iterates the list to print each course
+                System.out.println(course);       // to print each course
+            }
+        }
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Kurs Suche :" + databaseException);
+        }
+    }
+
+
+    private void coursesByStart(){
+        System.out.println("Geben Sie bitte die Start Datum (YYYY-MM-DD) ein:  ");
+        String searchText = scan.nextLine();
+        List<Course>list;
+        try{
+            list = repo.findAllCoursesByStartDate(Date.valueOf(searchText));  //(calls the method from the MySqlCourseRepository to )find all courses scheduled to start on a date given by the user and save them in list
+            for (Course course : list){           // iterates the list to print each course
+                System.out.println(course);       // to print each course
+            }
+        }
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Kurs Suche :" + databaseException);
         }
     }
 

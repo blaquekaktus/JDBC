@@ -228,7 +228,7 @@ public class MySqlCourseRepository implements MyCourseRepository {
     @Override
     public List<Course> findAllCoursesByNameOrDescription(String searchText) {
         try{
-            String sql = "SELECT * FROM `course` WHERE LOWER(`description)` LIKE LOWER(?) OR LOWER(`name`) LIKE LOWER(?) ";
+            String sql = "SELECT * FROM `courses` WHERE LOWER(`description)` LIKE LOWER(?) OR LOWER(`name`) LIKE LOWER(?) ";
             // Precompiled Select Statement which compares (LIKE) the lowercase equivalent (LOWER) of the name and description to the lowercase equivalent (LOWER(?)) of the search text (?)
             PreparedStatement preparedStatement = CONN.prepareStatement(sql);
             preparedStatement.setString(1,"%"+searchText+"%");   // search text wrapped in wild cards
@@ -253,11 +253,53 @@ public class MySqlCourseRepository implements MyCourseRepository {
     }
 
     public List<Course> findAllCoursesByName(String searchText) {
-        return null;
+        try{
+            String sql = "SELECT * FROM `courses` LOWER(`name`) LIKE LOWER(?) ";
+            // Precompiled Select Statement which compares (LIKE) the lowercase equivalent (LOWER) of the name to the lowercase equivalent (LOWER(?)) of the search text (?)
+            PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+            preparedStatement.setString(1,"%"+searchText+"%");   // search text wrapped in wild cards
+            ResultSet resultSet = preparedStatement.executeQuery();             // The results of the SQL Query is saved as resultSet
+            ArrayList<Course> courseArrayList = new ArrayList<>();              // An ArrayList is created to store the later created Course Objects
+            while(resultSet.next()){                                            // ResultSet iterated here
+                courseArrayList.add (new Course(                                // A new Course object is created for each result.
+                        resultSet.getLong("id"),                     // For each result found the field (column label) is mapped to a Course object property
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getInt("hours"),
+                        resultSet.getDate("begindate"),
+                        resultSet.getDate("enddate"),
+                        CourseType.valueOf(resultSet.getString("coursetype"))
+                ));
+            }
+            return courseArrayList;                                             // The List of Courses stored in the ArrayList
+        }catch(SQLException sqlException){
+            throw new DatabaseException(sqlException.getMessage());
+        }
     }
 
     public List<Course> findAllCoursesByDescription(String searchText) {
-        return null;
+        try{
+            String sql = "SELECT * FROM `course` WHERE LOWER(`description)` LIKE LOWER(?) ";
+            // Precompiled Select Statement which compares (LIKE) the lowercase equivalent (LOWER) of the description to the lowercase equivalent (LOWER(?)) of the search text (?)
+            PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+            preparedStatement.setString(1,"%"+searchText+"%");   // search text wrapped in wild cards
+            ResultSet resultSet = preparedStatement.executeQuery();             // The results of the SQL Query is saved as resultSet
+            ArrayList<Course> courseArrayList = new ArrayList<>();              // An ArrayList is created to store the later created Course Objects
+            while(resultSet.next()){                                            // ResultSet iterated here
+                courseArrayList.add (new Course(                                // A new Course object is created for each result.
+                        resultSet.getLong("id"),                     // For each result found the field (column label) is mapped to a Course object property
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getInt("hours"),
+                        resultSet.getDate("begindate"),
+                        resultSet.getDate("enddate"),
+                        CourseType.valueOf(resultSet.getString("coursetype"))
+                ));
+            }
+            return courseArrayList;                                             // The List of Courses stored in the ArrayList
+        }catch(SQLException sqlException){
+            throw new DatabaseException(sqlException.getMessage());
+        }
     }
 
     /**
@@ -277,8 +319,30 @@ public class MySqlCourseRepository implements MyCourseRepository {
      */
     @Override
     public List<Course> findAllCoursesByStartDate(Date startDate) {
-        return null;
+        try {
+            String sql = ("SELECT * FROM `courses` WHERE `begindate` = ?");   // Checks that the start date of the course matches the search date given
+            PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+            preparedStatement.setDate(1,startDate);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<Course> courseArrayList = new ArrayList<>();
+            while (resultSet.next()) {
+                courseArrayList.add(new Course(                                // A new Course object is created for each result.
+                        resultSet.getLong("id"),                     // For each result found the field (column label) is mapped to a Course object property
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getInt("hours"),
+                        resultSet.getDate("begindate"),
+                        resultSet.getDate("enddate"),
+                        CourseType.valueOf(resultSet.getString("coursetype"))
+                ));
+            }
+            return courseArrayList;
+        }
+        catch(SQLException sqlException){
+            throw new DatabaseException("Datenbankfehler beim Kurs Suche: " + sqlException.getMessage());
+        }
     }
+
 
     /**
      * Returns all courses in the database which are currently running
