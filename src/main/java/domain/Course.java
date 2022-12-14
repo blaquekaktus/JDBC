@@ -1,5 +1,4 @@
 package domain;
-
 import java.sql.Date;
 
 /**
@@ -20,10 +19,15 @@ public class Course extends BaseEntity{
     private CourseType courseType;
 
     /**
-     * Class Constructor.
      *
-     * @param id the id of the Course Object
-     * @throws InvalidValueException Exception thrown in case the id value entered is incorrect based on the parameters set
+     * @param id the course ID as Long
+     * @param name the name of the Course as a String
+     * @param description the description of the Course Object
+     * @param hours the name of the Course Object as an Integer
+     * @param beginDate the date the Course starts as a Date
+     * @param endDate the date the Course ends as a Date
+     * @param courseType the category of the Course
+     * @throws InvalidValueException
      */
     public Course(Long id, String name, String description, int hours, Date beginDate, Date endDate, CourseType courseType) throws InvalidValueException {
         super(id);
@@ -38,12 +42,12 @@ public class Course extends BaseEntity{
     /**
      * Class Constructor
      *
-     * @param name  String the name of the Course Object
-     * @param description String the description of the Course Object
-     * @param hours String the name of the Course Object
-     * @param beginDate
-     * @param endDate
-     * @param courseType
+     * @param name  the name of the Course Object as a String
+     * @param description the description of the Course Object
+     * @param hours the name of the Course Object as an Integer
+     * @param beginDate the date the Course starts as a Date
+     * @param endDate the date the Course ends as a Date
+     * @param courseType the type of Course as an enum element
      * @throws InvalidValueException
      */
 
@@ -72,7 +76,7 @@ public class Course extends BaseEntity{
      *
      */
     public void setName(String name) throws InvalidValueException{
-        if((name != null) || (name.length()>1)) {       // sets the condition that the name may not be empty(null) or 1 character or less
+        if((name != null) && (name.length()>1)){       // sets the condition that the name may not be empty(null) and must be more than 1 character long
             this.name = name;
         }else{                                          // the following error message is displayed if the above condition is not met.
             throw new InvalidValueException("Kursname muss mindestens 2 Zeichen lang sein!");
@@ -93,7 +97,7 @@ public class Course extends BaseEntity{
      * @throws InvalidValueException an error message is displayed in case the value entered does not meet the conditions set by this method
      */
     public void setDescription(String description) throws InvalidValueException{
-        if((description != null) || (description.length()>10)) {       // ensures that the description name is not empty(null) or less than 1 character long
+        if((description != null) && (description.length()>10)) {       // ensures that the description name is not empty(null) or less than 1 character long
             this.description = description;
         }else{                                                        // displays an error message if the above condition is not met.
             throw new InvalidValueException("Kursdescription muss mindestens 10 Zeichen lang sein!");
@@ -165,8 +169,8 @@ public class Course extends BaseEntity{
      * @throws InvalidValueException an error message is displayed in case the value entered for name does not meet the conditions set be this method
      */
     public void setEndDate(Date endDate) throws InvalidValueException{
-        if(endDate != null) {                              //checks that the end date is set
-            if(this.beginDate != null) {                   //checks that the start date is already set
+        if(endDate != null) {                              //checks if the end date is already entered
+            if(this.beginDate != null) {                   //checks if the start date is already set
                 if (endDate.after(this.beginDate)) {       //checks that the end date is after the start date
                     this.endDate = endDate;
                 } else {
@@ -208,13 +212,13 @@ public class Course extends BaseEntity{
      */
     public String toString() {
         return "Course{" +
-                "id=" + this.getID() + '\'' +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", hours=" + hours +
-                ", beginDate=" + beginDate +
-                ", endDate=" + endDate +
-                ", courseType=" + courseType +
+                "id = " + this.getID() +
+                ", name = '" + name + '\'' +
+                ", description = '" + description + '\'' +
+                ", hours = " + hours +
+                ", beginDate = " + beginDate +
+                ", endDate = " + endDate +
+                ", courseType = " + courseType +
                 '}';
     }
 
