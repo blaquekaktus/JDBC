@@ -102,14 +102,14 @@ private void kurs(){
         showKursMenu();
         kurs = (scan.nextLine().toLowerCase());
         switch (kurs) {
-            case "1" -> addStudent();
-            case "2" -> showAllStudents();
-            case "3" -> showStudentDetails();
+            case "1" -> addCourse();
+            case "2" -> showAllCourses();
+            case "3" -> showCourseDetails();
             case "4" -> updateStudentDetails();
-            case "5" -> deleteStudent();
-            case "6" -> studentSearch();
-            case "7" -> studentsByBirthdate();
-            case "8" -> studentsByBirthdateInRange();
+            case "5" -> deleteCourse();
+            case "6" -> courseSearch();
+            case "7" -> coursesByStart();
+            case "8" -> runningCourses();
             case "x" -> System.out.println("Auf Wiedersehen");
             default -> inputError();
         }
@@ -117,26 +117,7 @@ private void kurs(){
     scan.close();                   //closes the scanner
 }
 
-    private void student(){
-        String student = "-";
-        while (!student.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
-            showKursMenu();
-            student = (scan.nextLine().toLowerCase());
-            switch (student) {
-                case "1" -> addCourse();
-                case "2" -> showAllCourses();
-                case "3" -> showCourseDetails();
-                case "4" -> updateCourseDetails();
-                case "5" -> deleteCourse();
-                case "6" -> courseSearch();
-                case "7" ->coursesByStart();
-                case "8" -> runningCourses();
-                case "x" -> System.out.println("Auf Wiedersehen");
-                default -> inputError();
-            }
-        }
-        scan.close();                   //closes the scanner
-    }
+
 
     private void showStudentMenu(){
         System.out.println("\n---------------------------STUDENT:INNEN MANAGEMENT---------------------------\n");
@@ -150,11 +131,31 @@ private void kurs(){
                         \t5: Student:innen löschen\s
                         \t6: Student:innen suchen bei Name \s
                         \t7: Student:innen suchen beim Geburtstagdatum\s
-                        \t8: Student:innen suchen beim Geburtstagdatum in Spezifische Zeitraum\s 
+                        \t8: Student:innen suchen beim Geburtstagdatum im Spezifischen Zeitraum\s 
                         \tx: Program beenden\n
                 """);
     }
 
+    private void student(){
+        String kurs = "-";
+        while (!kurs.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+            showKursMenu();
+            kurs = (scan.nextLine().toLowerCase());
+            switch (kurs) {
+                case "1" -> addStudent();
+                case "2" -> showAllStudents();
+                case "3" -> showStudentDetails();
+                case "4" -> updateStudentDetails();
+                case "5" -> deleteStudent();
+                case "6" -> studentSearch();
+                case "7" -> studentsByBirthdate();
+                case "8" -> studentsByBirthdateInRange();
+                case "x" -> System.out.println("Auf Wiedersehen");
+                default -> inputError();
+            }
+        }
+        scan.close();                   //closes the scanner
+    }
     /**
      * Displays an error message in case the user enters invalid information.
      */
