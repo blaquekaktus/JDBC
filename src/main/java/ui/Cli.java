@@ -1,14 +1,11 @@
 package ui;
 
-import dataaccess.MyCourseRepository;
-import dataaccess.DatabaseException;
+import dataaccess.*;
 import domain.Course;
+import domain.Student;
 import domain.CourseType;
 import domain.InvalidValueException;
 
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -25,7 +22,7 @@ import java.sql.Date;
 public class Cli {
     Scanner scan;
     MyCourseRepository repo;
-
+    MyStudentRepository repo2;
 
     /**
      * class constructor
@@ -33,15 +30,58 @@ public class Cli {
      */
     public Cli(MyCourseRepository repo){
         this.scan = new Scanner(System.in);
-        this.repo = repo;                       //repository object
+        this.repo = repo; //course repository object
+
+    }
+
+    public Cli(MyStudentRepository repo){
+        this.scan = new Scanner(System.in);
+        this.repo2 = repo; //student repository object
+
+    }
+
+    public void start() {
+        String input = "-";
+        while (!input.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+            showStartMenu();
+            input = (scan.nextLine().toLowerCase());
+            switch (input) {
+                case "k" -> kurs();
+                case "s" -> student();
+                case "x" -> System.out.println("Auf Wiedersehen");
+                default -> inputError();
+            }
+        }
+        scan.close();
     }
 
     /**
      * Displays the menu.
      */
-    private void showMenu(){
-        System.out.println("\n---------------------KURS MANAGEMENT---------------------------\n");
-        System.out.println("Bitte Geben Sie der Zahl ihre Wahl ein\n");
+    private void showStartMenu(){
+        //String start = "-";
+        //while (!start.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+        //showKursMenu();
+            String start = (scan.nextLine().toLowerCase());
+            System.out.println("\n---------------------DATENBANK MANAGEMENT---------------------------\n");
+            System.out.println("\nWelche Datenbank möchten Sie zugreifen?\nBitte Geben Sie ihr Wahl unten ein\n");
+            System.out.println(
+                    """
+                                    \tk: Kurse\s                                    
+                                    \ts: Student:innen\s
+                                    \tx: Program beenden\n);
+                    """
+            );
+
+        //}
+    }
+
+    /**
+     * Initializes the Command Line Interface and manages its behaviour.
+     */
+    private void showKursMenu(){
+        System.out.println("\n---------------------------KURSMANAGEMENT---------------------------\n");
+        System.out.println("\nWas möchten Sie jetzt tun?\nBitte Geben Sie ihr Wahl unten ein\n");
         System.out.println(
                 """
                         \t1: Kurs eingeben\s
@@ -49,12 +89,70 @@ public class Cli {
                         \t3: Kursdetails anzeigen\s
                         \t4: Kursdetails ändern\s
                         \t5: Kurs löschen\s
-                        \t6: Kurs beim Name oder Beschreibung suchen\s
-                        \t7: Alle laufende Kurse anzeigen\s 
-                        \t8: Kurs bei der Name finden\s
-                        \t9: Kurs bei der Beschreibung finden\s
-                        \t10: Kurs bei Start Datum finden \s
-                        \tx: Program beenden\n""");
+                        \t6: Kurs suchen beim Namen oder Beschreibung\s
+                        \t7: Kurs suchen bei BeginDatum\s
+                        \t8: Alle laufende Kurse anzeigen\s 
+                        \tx: Program beenden\n
+                """);
+    }
+
+private void kurs(){
+    String kurs = "-";
+    while (!kurs.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+        showKursMenu();
+        kurs = (scan.nextLine().toLowerCase());
+        switch (kurs) {
+            case "1" -> addStudent();
+            case "2" -> showAllStudents();
+            case "3" -> showStudentDetails();
+            case "4" -> updateStudentDetails();
+            case "5" -> deleteStudent();
+            case "6" -> studentSearch();
+            case "7" -> studentsByBirthdate();
+            case "8" -> studentsByBirthdateInRange();
+            case "x" -> System.out.println("Auf Wiedersehen");
+            default -> inputError();
+        }
+    }
+    scan.close();                   //closes the scanner
+}
+
+    private void student(){
+        String student = "-";
+        while (!student.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+            showKursMenu();
+            student = (scan.nextLine().toLowerCase());
+            switch (student) {
+                case "1" -> addCourse();
+                case "2" -> showAllCourses();
+                case "3" -> showCourseDetails();
+                case "4" -> updateCourseDetails();
+                case "5" -> deleteCourse();
+                case "6" -> courseSearch();
+                case "7" ->coursesByStart();
+                case "8" -> runningCourses();
+                case "x" -> System.out.println("Auf Wiedersehen");
+                default -> inputError();
+            }
+        }
+        scan.close();                   //closes the scanner
+    }
+
+    private void showStudentMenu(){
+        System.out.println("\n---------------------------STUDENT:INNEN MANAGEMENT---------------------------\n");
+        System.out.println("\nWas möchten Sie jetzt tun?\nBitte Geben Sie ihr Wahl unten ein\n");
+        System.out.println(
+                """
+                        \t1: Neue Student einfugen\s
+                        \t2: Alle Student:innen anzeigen\s
+                        \t3: Student:innen Details anzeigen\s
+                        \t4: Student:innen Details ändern\s
+                        \t5: Student:innen löschen\s
+                        \t6: Student:innen suchen bei Name \s
+                        \t7: Student:innen suchen beim Geburtstagdatum\s
+                        \t8: Student:innen suchen beim Geburtstagdatum in Spezifische Zeitraum\s 
+                        \tx: Program beenden\n
+                """);
     }
 
     /**
@@ -62,35 +160,13 @@ public class Cli {
      */
     private void inputError(){
         System.out.println("Falsche Eingabe!\n" +
-                "Bitte geben Sie nur die vorgegebene Nummern (1 - 8) oder x ein: ");
+                "Bitte geben Sie nur die vorgegebene Nummern  oder x ein: ");
     }
 
     /**
      * Initializes the Command Line Interface and manages its behaviour.
      */
-    public void start(){
-        String input = "-";
-        while (!input.equals("x")){     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
-            showMenu();
-            input = scan.nextLine();
 
-            switch (input) {
-                case "1" -> addCourse();
-                case "2" -> showAllCourses();
-                case "3" -> showCourseDetails();
-                case "4" -> updateCourseDetails();
-                case "5" -> deleteCourse();
-                case "6" -> courseSearch();
-                case "7" -> runningCourses();
-                case "8" -> courseSearchbyName();
-                case "9" -> courseSearchbyDesc();
-                case "10" ->coursesByStart();
-                case "x" -> System.out.println("Auf Wiedersehen");
-                default -> inputError();
-            }
-        }
-        scan.close();                   //closes the scanner
-    }
 
     /**
      * adds a new Course object to the database
@@ -385,5 +461,209 @@ public class Cli {
         }
     }
 
+    //STUDENTS
+
+    private void addStudent() throws DatabaseException, IllegalArgumentException{
+        String f_name, l_name;                               //Temporary Variables for each Object Property, used to store the information entered by the user
+        Date birthdate;
+
+        try{
+            System.out.println("Bitte alle Kursdaten angeben:");
+            System.out.println("Vorname: ");
+            f_name = scan.nextLine();
+            if(f_name.equals("")) throw new IllegalArgumentException("Eingabe darf nicht leer sein!"); //UI (Client-Side) Validation in order to ensure that the data entered is database consistent.
+            System.out.println("Nachname: ");
+            l_name = scan.nextLine();
+            if(l_name.equals("")) throw new IllegalArgumentException("Eingabe darf nicht leer sein!");
+            System.out.println("Birthdate (YYYY-MM-DD): ");
+            birthdate = Date.valueOf(scan.nextLine());
+            System.out.println("Enddatum (YYYY-MM-DD): ");
+
+            Optional<Student> optionalCourse = repo2.insert(
+                    new Student(f_name, l_name, birthdate)
+            );
+            if(optionalCourse.isPresent()){
+                System.out.println("Student:in eingefügt: " + optionalCourse.get());
+            }else{
+                System.out.println("Student:in könnte nicht eingefügt werden");
+            }
+
+
+        }
+        catch(IllegalArgumentException illegalArgumentException){
+            // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
+            System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
+        }
+        catch(InvalidValueException invalidValueException){
+            System.out.println("Student:indaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
+            // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
+        }
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Einfügen: " + databaseException.getMessage());
+            // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
+        }
+        catch(Exception exception){
+            System.out.println("Unbekannter Fehler beim Einfügen: " + exception.getMessage());
+            // Handles any other exceptions thrown. Returns an error message with the details of the exception.
+        }
+    }
+    private void showAllStudents() throws DatabaseException {
+        List<Student> list = null;
+
+        list = repo2.getAll();
+
+        try {
+            if (list.size() > 0) {
+                for (Student student : list) {
+                    System.out.println(student);
+                }
+            } else {
+                System.out.println("Keine Stundent:innen vorhanden!");
+            }
+        }catch(DatabaseException e){
+            System.out.println("Datenbankfehler bei Anzeige aller Student:innen: " + e.getMessage());
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler ist bei anzeigen alle Student:innen: " + exception.getMessage());
+        }
+    }
+    private void showStudentDetails() throws DatabaseException {
+        System.out.println("Für welchen Student:in möchten Sie die Details anzeigen? Bitte geben sie den Student:in ID ein");
+        Long studentId = Long.parseLong(scan.nextLine());
+        try{
+            Optional<Student>studentOptional = repo2.getById(studentId);
+            if(studentOptional.isPresent()){
+                System.out.println(studentOptional.get());
+            }else{
+                System.out.println("Student:in mit der ID " + studentId + " nicht gefunden");
+            }
+
+        }catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler bei Student:in Detailanzeigen " + databaseException.getMessage());
+
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler bei Student:in Detailanzeigen " + exception.getMessage());
+        }
+    }
+    private void updateStudentDetails() throws DatabaseException {
+        System.out.println("Für welchen Kurs möchten Sie die Kursdetails ändern?");
+        Long studentId = Long.parseLong(scan.nextLine());
+        try {
+            Optional<Student> studentOptional = repo2.getById(studentId);                   //get the course by the ID
+            if (studentOptional.isEmpty()) {                                             //check whether a course with the ID entered exists.
+                System.out.println("Kurs mit der ID " + studentId + " nicht gefunden");   // if the course doesn't exist then the user is informed
+            } else {
+                Student student = studentOptional.get();
+                System.out.println("Anderung für folgenden Student: ");
+                System.out.println(student);
+
+                String f_name, l_name, birthdate;          //Temporary variables to store the new course information entered by the user from the CLI
+                System.out.println("Bitte neue Kursdaten angeben (Enter,falls keine Änderung gewünscht ist): "); // set the variables to the new values given by user
+                System.out.println("Vorname: ");
+                f_name = scan.nextLine();
+                System.out.println("Nachname: ");
+                l_name = scan.nextLine();
+                System.out.println("Geburtstagsdatum (YYYY-MM-DD): ");
+                birthdate = scan.nextLine();
+
+
+                //A new Optional Student Object is created from the repository and updated using the update method
+                Optional<Student> optionalCourseUpdated = repo2.update(
+                        new Student(                                                             // creates a new course
+                                student.getID(),
+                                f_name.equals("") ? student.getFirstName() : f_name,                      // if the name is empty (user pressed Enter) then the old value is retained or else the name entered is used.
+                                l_name.equals("") ? student.getLastName() : l_name,
+                                birthdate.equals("") ? student.getBirthdate() : Date.valueOf(birthdate)
+                        ));
+                optionalCourseUpdated.ifPresentOrElse(
+                        (c) -> System.out.println("Student:in Details aktualisiert: " + c),                   // If the course was updated then this message is displayed
+                        () -> System.out.println("Student:in konnte nicht aktualisiert werden!")      // If no course was updated then this message is displayed
+                );
+            }
+        }
+        catch(IllegalArgumentException illegalArgumentException){
+            // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
+            System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
+        }
+        catch(InvalidValueException invalidValueException){
+            System.out.println("Student:indaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
+            // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
+        }
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler bei Student:in Detailanzeigen: " + databaseException.getMessage());
+            // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
+        }
+        catch(Exception exception){
+            System.out.println("Unbekannter Fehler bei Student:in Detailanzeigen: " + exception.getMessage());
+            // Handles any other exceptions thrown. Returns an error message with the details of the exception.
+        }
+    }
+    public void deleteStudent(){
+        System.out.println("Welcher Student:in möchten Sie löschen? Bitte der ID eingeben: ");
+        Long studentToDeleteID = Long.parseLong(scan.nextLine());
+
+        try {
+            repo2.deleteById(studentToDeleteID);
+        }
+        catch(IllegalArgumentException illegalArgumentException){
+            // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
+            System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
+        }
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim löschen: " + databaseException.getMessage());
+            // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
+        }
+        catch(Exception exception){
+            System.out.println("Unbekannter Fehler beim löschen: " + exception.getMessage());
+            // Handles any other exceptions thrown. Returns an error message with the details of the exception.
+        }
+    }
+    private void studentSearch(){
+        System.out.println("Geben Sie einen Namen ein!");
+        String searchText = scan.nextLine();
+        List<Student>studentList;
+        try{
+            studentList = repo2.findStudentByName(searchText);
+            for (Student student: studentList){
+                System.out.println(student);
+            }
+
+        }catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Student Suche: " + databaseException.getMessage());
+        }catch(Exception exception){
+            System.out.println("Unbekannter Fehler beim Student Suche: " + exception.getMessage());
+        }
+    }
+
+    private void studentsByBirthdate(){
+        System.out.println("Geben Sie bitte die Geburtsdatum (YYYY-MM-DD) ein:  ");
+        String searchText = scan.nextLine();
+        List<Student>list;
+        try{
+            list = repo2.findStudentByBirthdate(Date.valueOf(searchText));  //(calls the method from the MySqlCourseRepository to )find all courses scheduled to start on a date given by the user and save them in list
+            for (Student student : list){           // iterates the list to print each course
+                System.out.println(student);       // to print each course
+            }
+        }
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Student:in Suche :" + databaseException);
+        }
+    }
+
+    private void studentsByBirthdateInRange(){
+        System.out.println("Geben Sie bitte die Geburtsdatum (YYYY-MM-DD) ein:  ");
+        String date1 = scan.nextLine();
+        System.out.println("Geben Sie bitte die Geburtsdatum (YYYY-MM-DD) ein:  ");
+        String date2 = scan.nextLine();
+        List<Student>list;
+        try{
+            list = repo2.findStudentBornDuringPeriod(Date.valueOf(date1), Date.valueOf(date2));  //(calls the method from the MySqlCourseRepository to )find all courses scheduled to start on a date given by the user and save them in list
+            for (Student student : list){           // iterates the list to print each course
+                System.out.println(student);       // to print each course
+            }
+        }
+        catch(DatabaseException databaseException){
+            System.out.println("Datenbankfehler beim Student:in Suche :" + databaseException);
+        }
+    }
 
 }
