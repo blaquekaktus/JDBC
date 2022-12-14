@@ -22,5 +22,4 @@ public interface MyCourseRepository extends BaseRepository<Course, Long>{
     List<Course> findAllCoursesByCourseType(CourseType courseType);             //returns a list of courses to a search by course type
     List<Course> findAllCoursesByStartDate(Date startDate);                     //returns a list of courses to a search by start date
     List<Course> findAllRunningCourses();                                        //returns a list of courses that are in progress
-
 }
