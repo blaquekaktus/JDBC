@@ -19,7 +19,6 @@ import java.util.Optional;
  */
 
 public class MySqlCourseRepository implements MyCourseRepository {
-
     private final Connection CONN;
 
     /**
@@ -252,9 +251,14 @@ public class MySqlCourseRepository implements MyCourseRepository {
         }
     }
 
+    /**
+     *
+     * @param searchText
+     * @return
+     */
     public List<Course> findAllCoursesByName(String searchText) {
         try{
-            String sql = "SELECT * FROM `courses` LOWER(`name`) LIKE LOWER(?) ";
+            String sql = "SELECT * FROM `courses` LOWER(`courseType`) LIKE LOWER(?) ";
             // Precompiled Select Statement which compares (LIKE) the lowercase equivalent (LOWER) of the name to the lowercase equivalent (LOWER(?)) of the search text (?)
             PreparedStatement preparedStatement = CONN.prepareStatement(sql);
             preparedStatement.setString(1,"%"+searchText+"%");   // search text wrapped in wild cards
@@ -277,6 +281,11 @@ public class MySqlCourseRepository implements MyCourseRepository {
         }
     }
 
+    /**
+     *
+     * @param searchText
+     * @return
+     */
     public List<Course> findAllCoursesByDescription(String searchText) {
         try{
             String sql = "SELECT * FROM `course` WHERE LOWER(`description)` LIKE LOWER(?) ";
@@ -309,9 +318,29 @@ public class MySqlCourseRepository implements MyCourseRepository {
      */
     @Override
     public List<Course> findAllCoursesByCourseType(CourseType courseType) {
-        return null;
+        try{
+            String sql = "SELECT * FROM `courses` LOWER(`courseType`) LIKE LOWER(?) ";
+            // Precompiled Select Statement which compares (LIKE) the lowercase equivalent (LOWER) of the name to the lowercase equivalent (LOWER(?)) of the search text (?)
+            PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+            preparedStatement.setString(1,"%"+courseType.toString()+"%");   // courseType converted to a string for comparison then wrapped in wild cards
+            ResultSet resultSet = preparedStatement.executeQuery();             // The results of the SQL Query is saved as resultSet
+            ArrayList<Course> courseArrayList = new ArrayList<>();              // An ArrayList is created to store the later created Course Objects
+            while(resultSet.next()){                                            // ResultSet iterated here
+                courseArrayList.add (new Course(                                // A new Course object is created for each result.
+                        resultSet.getLong("id"),                     // For each result found the field (column label) is mapped to a Course object property
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getInt("hours"),
+                        resultSet.getDate("begindate"),
+                        resultSet.getDate("enddate"),
+                        CourseType.valueOf(resultSet.getString("coursetype"))
+                ));
+            }
+            return courseArrayList;                                             // The List of Courses stored in the ArrayList
+        }catch(SQLException sqlException){
+            throw new DatabaseException(sqlException.getMessage());
+        }
     }
-
     /**
      * Returns all the courses found in the database based on the search entered
      * @param startDate the start date of the course to be found
