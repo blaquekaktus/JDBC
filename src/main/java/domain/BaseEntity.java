@@ -9,7 +9,7 @@ package domain;
  */
 public abstract class BaseEntity {
 
-    public Long id;
+    private Long id;
 
     public BaseEntity(Long id) {
     }
@@ -19,12 +19,12 @@ public abstract class BaseEntity {
      * @param id used to set the id.
      * @throws InvalidValueException Exception thrown in case the id value entered is incorrect based on the parameters set
      */
-    public void BaseEntity(Long id) throws InvalidValueException {
+    public void BaseEntity(Long id){
         setID(id);      //call the setID method in the constructor in order to avoid reproducing the business logic of the code.
     }
 
     /**
-     *
+     * getter method to retrieve the id
      * @return id - returns the value of the id.
      */
     public Long getID(){
@@ -37,7 +37,9 @@ public abstract class BaseEntity {
      * @throws InvalidValueException returns an exception message in case an incorrect value is entered.
      */
     public void setID(Long id) throws InvalidValueException {
-        if (id==null|| id >= 0) {       //allows the id to be set to a value of null (e.g. via MySQL Insert Statement when the id is set to auto increment and assigned by the database)
+        if (id==null|| id >= 0) {
+            //allows the id to be set to a value of null (e.g. via MySQL Insert Statement when the id is set to auto increment and assigned by the database)
+            // or for an id from an entity that already exists
             this.id = id;               //or to a value greater than or equal to 0 (e.g. a specific id should be used)
         }else {
             throw new InvalidValueException("Kurs-ID müss größer gleich 0 sein!"); //Exception message if invalid ID value is entered
