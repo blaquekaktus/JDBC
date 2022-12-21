@@ -28,9 +28,10 @@ public class Cli2 {
      * class constructor
      * @param repo MyCourseRepository A MySqlCourseRepository Object
      */
-    public Cli2(MyCourseRepository repo){
+    public Cli2(MyCourseRepository repo, MyStudentRepository repo2){
         this.scan = new Scanner(System.in);
         this.repo = repo; //course repository object
+        this.repo2 = repo2; //student repository object
 
     }
 
@@ -38,11 +39,10 @@ public class Cli2 {
      * class constructor
      * @param repo2
      */
-    public Cli2(MyStudentRepository repo2){
+    /*public Cli2(MyStudentRepository repo2){
         this.scan = new Scanner(System.in);
-        this.repo2 = repo2; //student repository object
 
-    }
+    }*/
 
     /**
      * Starts the CLI
@@ -247,6 +247,7 @@ public class Cli2 {
      */
     private void showAllCourses() throws DatabaseException {
         List<Course> list = null;
+        String stem = "";
 
         list = repo.getAll();
 
@@ -561,19 +562,19 @@ public class Cli2 {
         }
     }
     private void updateStudentDetails() throws DatabaseException {
-        System.out.println("Für welchen Kurs möchten Sie die Kursdetails ändern?");
+        System.out.println("Für welchen Student:in möchten Sie die details ändern?");
         Long studentId = Long.parseLong(scan.nextLine());
         try {
             Optional<Student> studentOptional = repo2.getById(studentId);                   //get the course by the ID
             if (studentOptional.isEmpty()) {                                             //check whether a course with the ID entered exists.
-                System.out.println("Kurs mit der ID " + studentId + " nicht gefunden");   // if the course doesn't exist then the user is informed
+                System.out.println("Student:in mit der ID " + studentId + " nicht gefunden");   // if the course doesn't exist then the user is informed
             } else {
                 Student student = studentOptional.get();
                 System.out.println("Anderung für folgenden Student: ");
                 System.out.println(student);
 
                 String f_name, l_name, birthdate;          //Temporary variables to store the new course information entered by the user from the CLI
-                System.out.println("Bitte neue Kursdaten angeben (Enter,falls keine Änderung gewünscht ist): "); // set the variables to the new values given by user
+                System.out.println("Bitte neue Student:in daten angeben (Enter,falls keine Änderung gewünscht ist): "); // set the variables to the new values given by user
                 System.out.println("Vorname: ");
                 f_name = scan.nextLine();
                 System.out.println("Nachname: ");

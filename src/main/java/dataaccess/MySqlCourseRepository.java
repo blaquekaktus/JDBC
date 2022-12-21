@@ -227,7 +227,7 @@ public class MySqlCourseRepository implements MyCourseRepository {
     @Override
     public List<Course> findAllCoursesByNameOrDescription(String searchText) {
         try{
-            String sql = "SELECT * FROM `courses` WHERE LOWER(`description)` LIKE LOWER(?) OR LOWER(`name`) LIKE LOWER(?) ";
+            String sql = "SELECT * FROM `courses` WHERE LOWER(`description`) LIKE LOWER(?) OR LOWER(`name`) LIKE LOWER(?) ";
             // Precompiled Select Statement which compares (LIKE) the lowercase equivalent (LOWER) of the name and description to the lowercase equivalent (LOWER(?)) of the search text (?)
             PreparedStatement preparedStatement = CONN.prepareStatement(sql);
             preparedStatement.setString(1,"%"+searchText+"%");   // search text wrapped in wild cards

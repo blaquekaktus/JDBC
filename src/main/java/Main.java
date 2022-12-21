@@ -21,7 +21,7 @@ public class Main {
 
         Cli2 myCli = null;
         try {
-            myCli = new Cli2(new MySqlCourseRepository());
+            myCli = new Cli2(new MySqlCourseRepository(), new MySqlStudentRepository());
         } catch (SQLException e) {
             System.out.println("Datenbank Fehler: " + e.getMessage() + "\n SQL State: " + e.getSQLState());
         } catch (ClassNotFoundException e1) {
@@ -30,15 +30,7 @@ public class Main {
         myCli.start();
 
 
-        Cli2 myCli2 = null;
-        try {
-            myCli2 = new Cli2(new MySqlStudentRepository());
-        } catch (SQLException e) {
-            System.out.println("Datenbank Fehler: " + e.getMessage() + "\n SQL State: " + e.getSQLState());
-        } catch (ClassNotFoundException e1) {
-            System.out.println("Datenbank Fehler: " + e1.getMessage());
-        }
-        myCli2.start();
+
 
     }
 
