@@ -19,28 +19,28 @@ import java.sql.Date;
  * @version 1.0 19.11.2022
  */
 
-public class Cli {
+public class Cli2 {
     Scanner scan;
     MyCourseRepository repo;
     MyStudentRepository repo2;
 
     /**
      * class constructor
-     * @param repo MyCourseRepository A MyCourseRepository Object
+     * @param repo MyCourseRepository A MySqlCourseRepository Object
      */
-    public Cli(MyCourseRepository repo){
+    public Cli2(MyCourseRepository repo){
         this.scan = new Scanner(System.in);
         this.repo = repo; //course repository object
 
     }
 
     /**
-     *
-     * @param repo
+     * class constructor
+     * @param repo2
      */
-    public Cli(MyStudentRepository repo){
+    public Cli2(MyStudentRepository repo2){
         this.scan = new Scanner(System.in);
-        this.repo2 = repo; //student repository object
+        this.repo2 = repo2; //student repository object
 
     }
 
@@ -48,35 +48,43 @@ public class Cli {
      * Starts the CLI
      */
     public void start() {
-        String input = "-";
-        while (!input.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
-            showStartMenu();
+        String input = "-";  //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+            showMenu();
             input = (scan.nextLine().toLowerCase());
             switch (input) {
-                case "k" -> kurs();
-                case "s" -> student();
-                case "x" -> System.out.println("Auf Wiedersehen");
+                case "k" -> {
+                    kurs();
+                    break;
+                }
+                case "s" -> {
+                    student();
+                    break;
+                }
+                case "x" -> {
+                    System.out.println("Auf Wiedersehen");
+                    break;
+                }
                 default -> inputError();
             }
-        }
         scan.close();
     }
+
+
 
     /**
      * Displays the menu.
      */
-    private void showStartMenu(){
-            System.out.println("\n---------------------DATENBANK MANAGEMENT---------------------------\n");
-            System.out.println("\nWelche Datenbank möchten Sie zugreifen?\nBitte Geben Sie ihr Wahl unten ein\n");
-            System.out.println(
-                    """
-                                    \tk: Kurse\s                                    
-                                    \ts: Student:innen\s
-                                    \tx: Program beenden\n);
-                    """
-            );
 
-        //}
+    private void showMenu(){
+        System.out.println("\n---------------------DATENBANK MANAGEMENT---------------------------\n");
+        System.out.println("\nWelche Datenbank möchten Sie zugreifen?\nBitte Geben Sie ihr Wahl unten ein\n");
+        System.out.println(
+                """
+                                \tk: Kurse\s                                    
+                                \ts: Student:innen\s
+                                \tx: Program beenden\n
+                """
+        );
     }
 
     /**
@@ -96,29 +104,30 @@ public class Cli {
                         \t7: Kurs suchen bei BeginDatum\s
                         \t8: Alle laufende Kurse anzeigen\s 
                         \tx: Program beenden\n
-                """);
+                """
+        );
     }
 
-private void kurs(){
-    String kurs = "-";
-    while (!kurs.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
-        showKursMenu();
-        kurs = (scan.nextLine().toLowerCase());
-        switch (kurs) {
-            case "1" -> addCourse();
-            case "2" -> showAllCourses();
-            case "3" -> showCourseDetails();
-            case "4" -> updateStudentDetails();
-            case "5" -> deleteCourse();
-            case "6" -> courseSearch();
-            case "7" -> coursesByStart();
-            case "8" -> runningCourses();
-            case "x" -> System.out.println("Auf Wiedersehen");
-            default -> inputError();
+    private void kurs(){
+        String input = "-";
+        while (!input.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+            showKursMenu();
+           input= (scan.nextLine().toLowerCase());
+            switch (input) {
+                case "1" -> addCourse();
+                case "2" -> showAllCourses();
+                case "3" -> showCourseDetails();
+                case "4" -> updateCourseDetails();
+                case "5" -> deleteCourse();
+                case "6" -> courseSearch();
+                case "7" -> coursesByStart();
+                case "8" -> runningCourses();
+                case "x" -> System.out.println("Auf Wiedersehen");
+                default -> inputError();
+            }
         }
+        scan.close();                   //closes the scanner
     }
-    scan.close();                   //closes the scanner
-}
 
 
 
@@ -136,15 +145,16 @@ private void kurs(){
                         \t7: Student:innen suchen beim Geburtstagdatum\s
                         \t8: Student:innen suchen beim Geburtstagdatum im Spezifischen Zeitraum\s 
                         \tx: Program beenden\n
-                """);
+                """
+        );
     }
 
     private void student(){
-        String kurs = "-";
-        while (!kurs.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
-            showKursMenu();
-            kurs = (scan.nextLine().toLowerCase());
-            switch (kurs) {
+        String input = "-";
+        while (!input.equals("x")) {     //Menu is repeatedly shown unless x(to end the program) is entered. This allows the user to make more than 1 choice in succession.
+            showStudentMenu();
+            input = (scan.nextLine().toLowerCase());
+            switch(input) {
                 case "1" -> addStudent();
                 case "2" -> showAllStudents();
                 case "3" -> showStudentDetails();
@@ -164,12 +174,10 @@ private void kurs(){
      */
     private void inputError(){
         System.out.println("Falsche Eingabe!\n" +
-                "Bitte geben Sie nur die vorgegebene Nummern  oder x ein: ");
+                "Bitte geben Sie nur die Zahlen der Menüauswahl  oder x ein: ");
     }
 
-    /**
-     * Initializes the Command Line Interface and manages its behaviour.
-     */
+
 
 
     /**
@@ -330,21 +338,21 @@ private void kurs(){
             }
         }
         catch(IllegalArgumentException illegalArgumentException){
-                // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
-                System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
-            }
+            // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
+            System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
+        }
         catch(InvalidValueException invalidValueException){
-                System.out.println("Kursdaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
-                // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
-            }
+            System.out.println("Kursdaten nicht korrekt eingegeben: " + invalidValueException.getMessage());
+            // Handles exceptions thrown when the user enters one or more invalid value. Returns an error message with the details of the exception.
+        }
         catch(DatabaseException databaseException){
-                System.out.println("Datenbankfehler bei Kurs-Detailanzeigen: " + databaseException.getMessage());
-                // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
-            }
+            System.out.println("Datenbankfehler bei Kurs-Detailanzeigen: " + databaseException.getMessage());
+            // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
+        }
         catch(Exception exception){
-                System.out.println("Unbekannter Fehler bei Kurs-Detailanzeigen: " + exception.getMessage());
-                // Handles any other exceptions thrown. Returns an error message with the details of the exception.
-            }
+            System.out.println("Unbekannter Fehler bei Kurs-Detailanzeigen: " + exception.getMessage());
+            // Handles any other exceptions thrown. Returns an error message with the details of the exception.
+        }
     }
 
     /**
@@ -359,17 +367,17 @@ private void kurs(){
             repo.deleteById(courseToDeleteID);
         }
         catch(IllegalArgumentException illegalArgumentException){
-                // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
-                System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
-            }
+            // Handles exceptions thrown when the user enters one or more incorrect or illegal arguments. Returns an error message with the details of the exception.
+            System.out.println("Eingabefehler: " + illegalArgumentException.getMessage());
+        }
         catch(DatabaseException databaseException){
-                System.out.println("Datenbankfehler beim löschen: " + databaseException.getMessage());
-                // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
-            }
+            System.out.println("Datenbankfehler beim löschen: " + databaseException.getMessage());
+            // Handles exceptions thrown when the user SQL Database exceptions occurs. Returns an error message with the details of the exception.
+        }
         catch(Exception exception){
-                System.out.println("Unbekannter Fehler beim löschen: " + exception.getMessage());
-                // Handles any other exceptions thrown. Returns an error message with the details of the exception.
-            }
+            System.out.println("Unbekannter Fehler beim löschen: " + exception.getMessage());
+            // Handles any other exceptions thrown. Returns an error message with the details of the exception.
+        }
     }
 
     /**
@@ -431,9 +439,8 @@ private void kurs(){
             System.out.println("Unbekannter Fehler beim Kurs Suche: " + exception.getMessage());
         }
     }
-/**
- *
- */
+
+
     /**
      * Returns an Arraylist of Courses that are currently running
      */
@@ -451,10 +458,10 @@ private void kurs(){
         }
     }
 
+
     /**
      *
      */
-
     private void coursesByStart(){
         System.out.println("Geben Sie bitte die Start Datum (YYYY-MM-DD) ein:  ");
         String searchText = scan.nextLine();

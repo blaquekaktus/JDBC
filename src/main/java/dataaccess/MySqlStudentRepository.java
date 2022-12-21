@@ -1,6 +1,5 @@
 package dataaccess;
 
-import domain.Course;
 import domain.Student;
 import util.Assert;
 
@@ -50,7 +49,7 @@ public class MySqlStudentRepository implements MyStudentRepository {
     public Optional<Student> insert(Student entity) {
         Assert.notNull(entity);                     //checks to ensure that the Course Object to be added is not null
         try{
-            String sql = "INSERT INTO `students` (`first_name`, `last_name`, `birthdate`) VALUES (?,?,?) ";
+            String sql = "INSERT INTO `students` (firstName, lastName, `birthdate`) VALUES (?,?,?) ";
             // The SQL INSERT statement (can be auto copied directly from the database to ensure that the syntax is correct).
             PreparedStatement preparedStatement = CONN.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             // (Statement.RETURN_GENERATED_KEYS) Returns the auto generated keys (IDs)
@@ -93,7 +92,7 @@ public class MySqlStudentRepository implements MyStudentRepository {
             return Optional.empty();
         }else{
             try {
-                String sql = "SELECT * FROM `students` WHERE `student_id` = ?";
+                String sql = "SELECT * FROM `students` WHERE `id` = ?";
                 PreparedStatement preparedStatement = CONN.prepareStatement(sql);
                 preparedStatement.setLong(1, id);
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -145,12 +144,12 @@ public class MySqlStudentRepository implements MyStudentRepository {
         try {
             PreparedStatement preparedStatement = CONN.prepareStatement(sql);   // sends the SQL Statement to the database
             ResultSet resultSet = preparedStatement.executeQuery();             // Results of SQL Statement saved as a Result Set through execute query
-            ArrayList<Student> studentList = new ArrayList<>();                 // A new Array list is created to store all the results of the SQL Query as Course OBJECTS
+            ArrayList<Student> studentList = new ArrayList<>();                 // A new Array list is created to store all the results of the SQL Query as Student OBJECTS
             while(resultSet.next()){                                            // ResultSet iterated here
-                studentList.add (new Student(                                   // A new Course object is created for each result.
-                        resultSet.getLong("student_id"),              // For each result found the field (column label) is mapped to a Course object property
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
+                studentList.add (new Student(                                   // A new Student object is created for each result.
+                        resultSet.getLong("id"),              // For each result found the field (column label) is mapped to a Course object property
+                        resultSet.getString("firstName"),
+                        resultSet.getString("lastName"),
                         resultSet.getDate("birthdate")
                 ));
             }
@@ -169,7 +168,7 @@ public class MySqlStudentRepository implements MyStudentRepository {
     @Override
     public Optional<Student> update(Student entity) {
         Assert.notNull(entity); //Checks to ensure that the object is not null
-        String sql = "UPDATE `student` SET `first_name` = ?, `last_name` = ?, `birthdate` = ? WHERE `students`.`id` = ?";
+        String sql = "UPDATE `student` SET `firstName` = ?, `lastName` = ?, `birthdate` = ? WHERE `students`.`id` = ?";
         if(countStudentsInDbWithId(entity.getID())==0) {
             return Optional.empty();
         }else{

@@ -107,6 +107,20 @@ public class Student extends BaseEntity {
             throw new InvalidValueException("Geburtstagdatum darfnicht leer sein!"); //throws an exception if the start date is not before the end date
         }
     }
+
+    /**
+     *
+     * Returns the course details as a  string
+     * @return String Returns the student details as a  string
+     */
+    public String toString() {
+        return "Course{" +
+                "id = " + this.getID() +
+                ", Vorname = '" + firstName + '\'' +
+                ", Nachname = '" + lastName + '\'' +
+                ", Geburtstagsdatum = " + birthdate +
+                '}';
+    }
 }
 
 
